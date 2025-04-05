@@ -37,11 +37,12 @@ columns_to_keep = [
     'Tx Bytes',
     'Rx Packets',
     'Rx Bytes',
-    'frame.time'
+    'frame.time',
+    'Label'
 ]
 data = df[columns_to_keep]
 time_split = data["frame.time"].str.split(" ", expand=True)
-data["time"] = copy.deepcopy(time_split[3])
+data["timez"] = copy.deepcopy(time_split[3])
 data=data.drop(columns=['frame.time'])
 columns_to_keep= data.columns.tolist()
 print(data.head(5))
@@ -49,14 +50,28 @@ print(data.head(5))
 #     plt.hist(data[i])
 #     plt.title(i)
 #     plt.show()
-label_list = df["Label"].unique()
+label_list = data["Label"].unique()
 colors = ['red', 'yellow', 'green']
-for i in range(3):
-     x=df[df["Label"]==label_list[i]]
-     plt.scatter(x["frame.time"],x["ip.src"], c=colors[i], label=label_list[i])
-plt.xlabel("time")
-plt.ylabel("ip.src")
-plt.legend()
+plot_helper = [
+    ('Packets', 'Bytes'),
+    ('Rx Packets', 'Tx Packets'),
+    ('frame.len', 'Packets'),
+    ('timez', 'Packets'),
+    ('timez', 'Bytes')
+]
+for x_feature, y_feature in plot_helper:
+    plt.figure(figsize=(10, 6))
+    for i in range(3):
+         x=data[data["Label"]==label_list[i]]
+         plt.scatter(x[x_feature], x[y_feature], c=colors[i], label=label_list[i], alpha=0.6, s=10)
+    plt.xlabel(x_feature)
+    plt.ylabel(y_feature)
+    plt.legend()
+    plt.show()
+
+
+corr_matrix = data.corr()
+plt.figure(figsize=(8, 4))
+sns.heatmap(corr_matrix, annot=True, cmap='Reds_r')
+plt.title('Correlation Matrix heatmap')
 plt.show()
-
-
