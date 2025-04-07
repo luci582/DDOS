@@ -69,9 +69,10 @@ for x_feature, y_feature in plot_helper:
     plt.legend()
     plt.show()
 
-
-corr_matrix = data.corr()
-plt.figure(figsize=(8, 4))
+numerical_data = data.select_dtypes(include=np.number)
+corr_matrix = numerical_data.corr()
+plt.figure(figsize=(10, 6))
 sns.heatmap(corr_matrix, annot=True, cmap='Reds_r')
 plt.title('Correlation Matrix heatmap')
 plt.show()
+
